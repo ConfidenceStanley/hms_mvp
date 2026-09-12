@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const connectDB = require('./config/db');
 
@@ -16,8 +15,25 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize());
 app.use(compression());
+
+const sanitizeData = (obj) => {
+  if (!obj || typeof obj !== 'object') return obj;
+  for (const key in obj) {
+    if (key.startsWith('$') || key.includes('.')) {
+      delete obj[key];
+    } else if (typeof obj[key] === 'object') {
+      sanitizeData(obj[key]);
+    }
+  }
+  return obj;
+};
+
+app.use((req, res, next) => {
+  if (req.body) sanitizeData(req.body);
+  if (req.params) sanitizeData(req.params);
+  next();
+});
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({

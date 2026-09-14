@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext';
+import { formatCurrency } from '../utils/formatCurrency';
 import { FaUserInjured, FaUserMd, FaCalendarCheck, FaFileInvoiceDollar } from 'react-icons/fa';
 
 const DashboardPage = () => {
@@ -14,7 +15,7 @@ const DashboardPage = () => {
     { label: 'Total Patients', value: '0', icon: FaUserInjured, color: 'text-primary bg-blue-50' },
     { label: 'Total Doctors', value: '0', icon: FaUserMd, color: 'text-success bg-green-50' },
     { label: "Today's Appointments", value: '0', icon: FaCalendarCheck, color: 'text-warning bg-orange-50' },
-    { label: 'Monthly Revenue', value: '$0', icon: FaFileInvoiceDollar, color: 'text-purple bg-purple-50' }
+    { label: 'Monthly Revenue', value: formatCurrency(0), icon: FaFileInvoiceDollar, color: 'text-purple bg-purple-50' }
   ];
 
   return (

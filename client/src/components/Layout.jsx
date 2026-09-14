@@ -93,10 +93,13 @@ const Layout = () => {
     <div className="flex min-h-screen">
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-navy flex flex-col transition-transform duration-300 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
-          <h2 className="text-xl font-bold text-white tracking-widest">HMS</h2>
-          <button className="lg:hidden text-white text-xl" onClick={() => setOpen(false)}>
+        <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" onError={(e) => {e.target.style.display='none'}} />
+            <h2 className="text-lg font-bold text-white tracking-wide">Oronna Medical Complex</h2>
+        </div>
+        <button className="lg:hidden text-white text-xl" onClick={() => setOpen(false)}>
             <FaTimes />
-          </button>
+        </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-2">

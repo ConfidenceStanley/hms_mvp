@@ -35,6 +35,9 @@ app.use((req, res, next) => {
   next();
 });
 
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -52,10 +55,28 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.statusCode || 500).json({
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+
+  if (err.name === 'ValidationError') {
+    const messages = Object.values(err.errors).map((e) => e.message);
+    return res.status(400).json({
+      success: false,
+      message: messages.join(', ')
+    });
+  }
+
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyPattern)[0];
+    return res.status(400).json({
+      success: false,
+      message: `Duplicate value for ${field}`
+    });
+  }
+
+  res.status(statusCode).json({
     success: false,
-    message: err.message || 'Internal Server Error'
+    message
   });
 });
 

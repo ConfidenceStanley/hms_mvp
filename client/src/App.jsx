@@ -10,34 +10,38 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
-
-// Patient Module Pages
 import PatientListPage from './pages/PatientListPage';
 import PatientFormPage from './pages/PatientFormPage';
 import PatientDetailPage from './pages/PatientDetailPage';
+import DoctorListPage from './pages/DoctorListPage';
+import DoctorFormPage from './pages/DoctorFormPage';
+import DoctorDetailPage from './pages/DoctorDetailPage';
+import AppointmentListPage from './pages/AppointmentListPage';
+import AppointmentBookingPage from './pages/AppointmentBookingPage';
+import AppointmentDetailPage from './pages/AppointmentDetailPage';
 
 const App = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer position="top-right" autoClose={3000} theme="colored" />
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          
-          {/* Protected Routes */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/register" element={<ProtectedRoute allowedRoles={['admin']}><RegisterPage /></ProtectedRoute>} />
-            
-            {/* Patient Module Routing */}
             <Route path="/patients" element={<ProtectedRoute allowedRoles={['admin', 'receptionist', 'doctor', 'nurse']}><PatientListPage /></ProtectedRoute>} />
             <Route path="/patients/register" element={<ProtectedRoute allowedRoles={['admin', 'receptionist']}><PatientFormPage /></ProtectedRoute>} />
             <Route path="/patients/:id" element={<ProtectedRoute allowedRoles={['admin', 'receptionist', 'doctor', 'nurse']}><PatientDetailPage /></ProtectedRoute>} />
+            <Route path="/doctors" element={<ProtectedRoute><DoctorListPage /></ProtectedRoute>} />
+            <Route path="/doctors/add" element={<ProtectedRoute allowedRoles={['admin']}><DoctorFormPage /></ProtectedRoute>} />
+            <Route path="/doctors/:id" element={<ProtectedRoute><DoctorDetailPage /></ProtectedRoute>} />
+            <Route path="/appointments" element={<ProtectedRoute><AppointmentListPage /></ProtectedRoute>} />
+            <Route path="/appointments/book" element={<ProtectedRoute allowedRoles={['admin', 'receptionist']}><AppointmentBookingPage /></ProtectedRoute>} />
+            <Route path="/appointments/:id" element={<ProtectedRoute><AppointmentDetailPage /></ProtectedRoute>} />
           </Route>
-          
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

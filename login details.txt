@@ -1,0 +1,38 @@
+Test C: Full Clinical Workflow
+
+    As Receptionist (tolu@oronnamedical.com / reception123):
+        Register a new patient
+        Book an appointment with Dr. Adeyemi
+
+    As Nurse (adaeze@oronnamedical.com / nurse123):
+        Go to Vital Signs
+        Search for the patient
+        Record temperature, BP, pulse, weight, height
+        Save
+
+    As Doctor (adeyemi@oronnamedical.com / doctor123):
+        Go to My Appointments
+        Start the consultation
+        Click "Conduct Active EMR Consultation"
+        Verify vitals display on the left panel
+        Fill diagnosis, prescribe medicine, request lab test
+        Submit
+
+    As Lab Tech (bisi@oronnamedical.com / lab123):
+        Go to Laboratory
+        Find the pending test
+        Start processing, upload results, complete
+
+    As Admin (admin@hms.com / admin123):
+        Go to Patients, view the patient file
+        Click EMR History tab
+        Verify the complete clinical timeline
+
+
+As Pharmacist
+emeka@oronnamedical.com
+pharma123
+
+As Accountant
+yemi@oronnamedical.com
+account123

@@ -19,11 +19,13 @@ import DoctorDetailPage from './pages/DoctorDetailPage';
 import AppointmentListPage from './pages/AppointmentListPage';
 import AppointmentBookingPage from './pages/AppointmentBookingPage';
 import AppointmentDetailPage from './pages/AppointmentDetailPage';
-
-// Phase 5 Clinical Pages
 import VitalSignsPage from './pages/VitalSignsPage';
 import MedicalRecordFormPage from './pages/MedicalRecordFormPage';
+import MedicalRecordsListPage from './pages/MedicalRecordsListPage';
 import LabDashboardPage from './pages/LabDashboardPage';
+import MedicineInventoryPage from './pages/MedicineInventoryPage';
+import MedicineFormPage from './pages/MedicineFormPage';
+import PharmacyDispensePage from './pages/PharmacyDispensePage';
 
 const App = () => {
   return (
@@ -46,11 +48,14 @@ const App = () => {
             <Route path="/appointments" element={<ProtectedRoute><AppointmentListPage /></ProtectedRoute>} />
             <Route path="/appointments/book" element={<ProtectedRoute allowedRoles={['admin', 'receptionist', 'doctor']}><AppointmentBookingPage /></ProtectedRoute>} />
             <Route path="/appointments/:id" element={<ProtectedRoute><AppointmentDetailPage /></ProtectedRoute>} />
-            
-            {/* Phase 5 Routes */}
             <Route path="/vitals" element={<ProtectedRoute allowedRoles={['admin', 'nurse']}><VitalSignsPage /></ProtectedRoute>} />
+            <Route path="/records" element={<ProtectedRoute allowedRoles={['admin', 'doctor', 'nurse', 'patient']}><MedicalRecordsListPage /></ProtectedRoute>} />
             <Route path="/records/consultation/:appointmentId" element={<ProtectedRoute allowedRoles={['admin', 'doctor']}><MedicalRecordFormPage /></ProtectedRoute>} />
             <Route path="/lab" element={<ProtectedRoute allowedRoles={['admin', 'lab_technician', 'doctor']}><LabDashboardPage /></ProtectedRoute>} />
+            <Route path="/pharmacy" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist', 'doctor']}><MedicineInventoryPage /></ProtectedRoute>} />
+            <Route path="/pharmacy/add" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist']}><MedicineFormPage /></ProtectedRoute>} />
+            <Route path="/pharmacy/edit/:id" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist']}><MedicineFormPage /></ProtectedRoute>} />
+            <Route path="/pharmacy/dispense" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist']}><PharmacyDispensePage /></ProtectedRoute>} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

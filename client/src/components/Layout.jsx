@@ -43,8 +43,8 @@ const roleMenu = {
   ],
   pharmacist: [
     { path: '/dashboard', label: 'Dashboard', icon: FaHome },
-    { path: '/pharmacy', label: 'Pharmacy', icon: FaPills },
-    { path: '/dispense', label: 'Dispense', icon: FaPills }
+    { path: '/pharmacy', label: 'Medicine Inventory', icon: FaPills },
+    { path: '/pharmacy/dispense', label: 'Dispense Queue', icon: FaClipboardList }
   ],
   lab_technician: [
     { path: '/dashboard', label: 'Dashboard', icon: FaHome },

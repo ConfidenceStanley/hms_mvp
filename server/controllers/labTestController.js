@@ -96,6 +96,10 @@ exports.uploadLabResults = async (req, res, next) => {
 
     if (!test) return next(new AppError('Lab test request not found', 404));
 
+    if (test.status === 'completed') {
+      return next(new AppError('This test has already been completed', 400));
+    }
+
     test.results = results;
     test.technicianNotes = technicianNotes;
     test.status = 'completed';

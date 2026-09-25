@@ -39,9 +39,9 @@ const medicalRecordSchema = new mongoose.Schema(
     prescription: [
       {
         medicineName: { type: String, required: true },
-        dosage: { type: String, required: true },
-        frequency: { type: String, required: true },
-        duration: { type: String, required: true },
+        dosage: { type: String, default: 'As directed' },
+        frequency: { type: String, default: 'Daily' },
+        duration: { type: String, default: '5 days' },
         instructions: { type: String, default: '' }
       }
     ],

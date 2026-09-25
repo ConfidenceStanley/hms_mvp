@@ -9,7 +9,9 @@ const MedicalRecordFormPage = () => {
   const [apt, setApt] = useState(null);
   const [vitals, setVitals] = useState(null);
   const [form, setForm] = useState({ chiefComplaint: '', clinicalNotes: '', diagnosis: '', treatmentPlan: '' });
-  const [prescription, setPrescription] = useState([{ medicineName: '', dosage: '', frequency: '', duration: '', instructions: '' }]);
+  const [prescription, setPrescription] = useState([
+    { medicineName: '', dosage: '', frequency: '', duration: '', instructions: '' }
+  ]);
   const [labs, setLabs] = useState([{ testName: '', category: 'Haematology', priority: 'routine' }]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -34,7 +36,10 @@ const MedicalRecordFormPage = () => {
   };
 
   const addPrescriptionRow = () => {
-    setPrescription([...prescription, { medicineName: '', dosage: '', frequency: '', duration: '', instructions: '' }]);
+    setPrescription([
+      ...prescription,
+      { medicineName: '', dosage: '', frequency: '', duration: '', instructions: '' }
+    ]);
   };
 
   const removePrescriptionRow = (idx) => {
@@ -57,35 +62,45 @@ const MedicalRecordFormPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.chiefComplaint || !form.clinicalNotes || !form.diagnosis) {
-      return toast.error('All mandatory fields are required');
+    if (!form.chiefComplaint.trim() || !form.clinicalNotes.trim() || !form.diagnosis.trim()) {
+      return toast.error('Chief complaint, clinical notes, and diagnoses are mandatory');
     }
     setLoading(true);
 
     try {
-      // Step 1: Submit requested labs (if any have text)
+      // Step 1: Submit requested labs (if any have a name)
       const requestedLabIds = [];
-      const validLabs = labs.filter(l => l.testName.trim() !== '');
+      const validLabs = labs.filter((l) => l.testName && l.testName.trim() !== '');
       for (const lab of validLabs) {
         const labRes = await API.post('/lab', {
           patientId: apt.patientId._id,
-          testName: lab.testName,
+          testName: lab.testName.trim(),
           category: lab.category,
           priority: lab.priority
         });
         requestedLabIds.push(labRes.data.data.test._id);
       }
 
-      // Step 2: Create EMR medical record
-      // NOTE: This automatically marks the appointment as 'completed' on the backend
+      // Step 2: Format prescriptions properly with safe fallbacks
+      const validPrescriptions = prescription
+        .filter((p) => p.medicineName && p.medicineName.trim() !== '')
+        .map((p) => ({
+          medicineName: p.medicineName.trim(),
+          dosage: p.dosage?.trim() || 'As directed',
+          frequency: p.frequency?.trim() || 'Daily',
+          duration: p.duration?.trim() || '5 days',
+          instructions: p.instructions?.trim() || ''
+        }));
+
+      // Step 3: Create EMR record (Backend automatically sets appointment to 'completed')
       await API.post('/records', {
         patientId: apt.patientId._id,
         appointmentId: apt._id,
-        chiefComplaint: form.chiefComplaint,
-        clinicalNotes: form.clinicalNotes,
-        diagnosis: form.diagnosis.split(',').map(d => d.trim()),
-        prescription: prescription.filter(p => p.medicineName.trim() !== ''),
-        treatmentPlan: form.treatmentPlan,
+        chiefComplaint: form.chiefComplaint.trim(),
+        clinicalNotes: form.clinicalNotes.trim(),
+        diagnosis: form.diagnosis.split(',').map((d) => d.trim()).filter(Boolean),
+        prescription: validPrescriptions,
+        treatmentPlan: form.treatmentPlan.trim(),
         linkedVitals: vitals ? vitals._id : null,
         linkedLabTests: requestedLabIds
       });
@@ -99,9 +114,16 @@ const MedicalRecordFormPage = () => {
     }
   };
 
-  if (!apt) return <div className="text-center py-12"><div className="w-10 h-10 border-4 border-slate-200 border-t-primary rounded-full animate-spin mx-auto" /></div>;
+  if (!apt) {
+    return (
+      <div className="text-center py-12">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-primary rounded-full animate-spin mx-auto" />
+      </div>
+    );
+  }
 
-  const inputClass = "w-full px-4 py-2.5 border-2 border-slate-100 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm bg-slate-50/50 transition-all";
+  const inputClass =
+    'w-full px-4 py-2.5 border-2 border-slate-100 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm bg-slate-50/50 transition-all';
 
   return (
     <div className="max-w-5xl mx-auto animate-fadeInUp">
@@ -132,7 +154,9 @@ const MedicalRecordFormPage = () => {
                 </div>
                 <div className="flex justify-between border-b border-slate-100 pb-1.5">
                   <span className="text-slate-400">Blood Pressure</span>
-                  <span className="font-bold text-navy">{vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic} mmHg</span>
+                  <span className="font-bold text-navy">
+                    {vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic} mmHg
+                  </span>
                 </div>
                 <div className="flex justify-between border-b border-slate-100 pb-1.5">
                   <span className="text-slate-400">Pulse (HR)</span>
@@ -144,7 +168,9 @@ const MedicalRecordFormPage = () => {
                 </div>
                 <div className="flex justify-between border-b border-slate-100 pb-1.5">
                   <span className="text-slate-400">Weight / Height</span>
-                  <span className="font-bold text-navy">{vitals.weight}kg / {vitals.height}cm</span>
+                  <span className="font-bold text-navy">
+                    {vitals.weight}kg / {vitals.height}cm
+                  </span>
                 </div>
                 <div className="flex justify-between pb-1.5">
                   <span className="text-slate-400">BMI</span>
@@ -152,7 +178,9 @@ const MedicalRecordFormPage = () => {
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-400 text-center py-6 italic border-2 border-dashed border-slate-100 rounded-xl">No triage record found</p>
+              <p className="text-xs text-slate-400 text-center py-6 italic border-2 border-dashed border-slate-100 rounded-xl">
+                No triage record found
+              </p>
             )}
           </div>
         </div>
@@ -166,22 +194,52 @@ const MedicalRecordFormPage = () => {
             </h3>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Chief Complaint *</label>
-              <input type="text" name="chiefComplaint" value={form.chiefComplaint} onChange={handleFormChange} required placeholder="e.g., Fever and chills for 3 days" className={inputClass} />
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Chief Complaint *
+              </label>
+              <input
+                type="text"
+                name="chiefComplaint"
+                value={form.chiefComplaint}
+                onChange={handleFormChange}
+                required
+                placeholder="e.g., Fever, headache and body weakness for 3 days"
+                className={inputClass}
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Clinical Notes & Findings *</label>
-              <textarea name="clinicalNotes" value={form.clinicalNotes} onChange={handleFormChange} required rows="3" placeholder="Symptom analysis, physical examination findings..." className={inputClass} />
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Clinical Notes & Findings *
+              </label>
+              <textarea
+                name="clinicalNotes"
+                value={form.clinicalNotes}
+                onChange={handleFormChange}
+                required
+                rows="3"
+                placeholder="Detailed physical examination findings, system reviews..."
+                className={inputClass}
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Diagnoses * (comma separated)</label>
-              <input type="text" name="diagnosis" value={form.diagnosis} onChange={handleFormChange} required placeholder="e.g., Malaria, Respiratory Tract Infection" className={inputClass} />
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Diagnoses * (comma separated)
+              </label>
+              <input
+                type="text"
+                name="diagnosis"
+                value={form.diagnosis}
+                onChange={handleFormChange}
+                required
+                placeholder="e.g., Malaria, Typhoid, Acute Bronchitis"
+                className={inputClass}
+              />
             </div>
           </div>
 
-          {/* Prescriptions */}
+          {/* Prescriptions with Duration input */}
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
             <h3 className="text-sm font-bold text-navy border-b border-slate-100 pb-2 mb-4 flex items-center gap-2">
               <FaPrescription className="text-primary" />
@@ -190,25 +248,70 @@ const MedicalRecordFormPage = () => {
 
             <div className="space-y-4">
               {prescription.map((row, idx) => (
-                <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end animate-fadeInUp">
+                <div
+                  key={idx}
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end p-3 bg-slate-50/50 rounded-xl border border-slate-100 animate-fadeInUp"
+                >
                   <div className="md:col-span-2">
-                    <label className="block text-[10px] font-bold text-slate-400 mb-1">Medicine Name</label>
-                    <input type="text" value={row.medicineName} onChange={(e) => updatePrescriptionRow(idx, 'medicineName', e.target.value)} placeholder="e.g., Paracetamol" className={inputClass} />
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">
+                      Medicine Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={row.medicineName}
+                      onChange={(e) => updatePrescriptionRow(idx, 'medicineName', e.target.value)}
+                      placeholder="e.g., Coartem"
+                      className={inputClass}
+                    />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 mb-1">Dosage</label>
-                    <input type="text" value={row.dosage} onChange={(e) => updatePrescriptionRow(idx, 'dosage', e.target.value)} placeholder="e.g., 500mg" className={inputClass} />
+                    <input
+                      type="text"
+                      value={row.dosage}
+                      onChange={(e) => updatePrescriptionRow(idx, 'dosage', e.target.value)}
+                      placeholder="e.g., 80/480mg"
+                      className={inputClass}
+                    />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 mb-1">Frequency</label>
-                    <input type="text" value={row.frequency} onChange={(e) => updatePrescriptionRow(idx, 'frequency', e.target.value)} placeholder="e.g., 2x daily" className={inputClass} />
+                    <input
+                      type="text"
+                      value={row.frequency}
+                      onChange={(e) => updatePrescriptionRow(idx, 'frequency', e.target.value)}
+                      placeholder="e.g., 2x daily"
+                      className={inputClass}
+                    />
                   </div>
                   <div>
-                    <button type="button" onClick={() => removePrescriptionRow(idx)} className="px-3 py-2 text-danger hover:bg-red-50 font-bold rounded-xl text-xs">Remove</button>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">Duration *</label>
+                    <input
+                      type="text"
+                      value={row.duration}
+                      onChange={(e) => updatePrescriptionRow(idx, 'duration', e.target.value)}
+                      placeholder="e.g., 3 days"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2 md:col-span-5 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => removePrescriptionRow(idx)}
+                      className="px-3 py-1 text-danger hover:bg-red-50 font-bold rounded-lg text-xs transition-colors"
+                    >
+                      Remove Item
+                    </button>
                   </div>
                 </div>
               ))}
-              <button type="button" onClick={addPrescriptionRow} className="text-primary font-bold text-xs hover:underline">+ Add Medicine</button>
+              <button
+                type="button"
+                onClick={addPrescriptionRow}
+                className="text-primary font-bold text-xs hover:underline inline-flex items-center gap-1"
+              >
+                + Add Another Medication
+              </button>
             </div>
           </div>
 
@@ -221,31 +324,67 @@ const MedicalRecordFormPage = () => {
 
             <div className="space-y-4">
               {labs.map((row, idx) => (
-                <div key={idx} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end animate-fadeInUp">
+                <div
+                  key={idx}
+                  className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end p-3 bg-slate-50/50 rounded-xl border border-slate-100 animate-fadeInUp"
+                >
                   <div className="md:col-span-2">
-                    <label className="block text-[10px] font-bold text-slate-400 mb-1">Investigation / Test Name</label>
-                    <input type="text" value={row.testName} onChange={(e) => updateLabRow(idx, 'testName', e.target.value)} placeholder="e.g., Malaria Parasite (MP)" className={inputClass} />
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">
+                      Investigation / Test Name
+                    </label>
+                    <input
+                      type="text"
+                      value={row.testName}
+                      onChange={(e) => updateLabRow(idx, 'testName', e.target.value)}
+                      placeholder="e.g., Malaria Parasite (MP), FBC"
+                      className={inputClass}
+                    />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 mb-1">Priority</label>
-                    <select value={row.priority} onChange={(e) => updateLabRow(idx, 'priority', e.target.value)} className={inputClass}>
+                    <select
+                      value={row.priority}
+                      onChange={(e) => updateLabRow(idx, 'priority', e.target.value)}
+                      className={inputClass}
+                    >
                       <option value="routine">Routine</option>
                       <option value="urgent">Urgent</option>
                       <option value="stat">STAT (Critical)</option>
                     </select>
                   </div>
                   <div>
-                    <button type="button" onClick={() => removeLabRow(idx)} className="px-3 py-2 text-danger hover:bg-red-50 font-bold rounded-xl text-xs">Remove</button>
+                    <button
+                      type="button"
+                      onClick={() => removeLabRow(idx)}
+                      className="px-3 py-2.5 text-danger hover:bg-red-50 font-bold rounded-xl text-xs w-full"
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
               ))}
-              <button type="button" onClick={addLabRow} className="text-primary font-bold text-xs hover:underline">+ Add Investigation Request</button>
+              <button
+                type="button"
+                onClick={addLabRow}
+                className="text-primary font-bold text-xs hover:underline inline-flex items-center gap-1"
+              >
+                + Add Investigation Request
+              </button>
             </div>
           </div>
 
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Treatment & Follow-up Plan</label>
-            <textarea name="treatmentPlan" value={form.treatmentPlan} onChange={handleFormChange} rows="2" placeholder="e.g., Bed rest, return for checkup in 5 days..." className={inputClass} />
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+              Treatment & Follow-up Plan
+            </label>
+            <textarea
+              name="treatmentPlan"
+              value={form.treatmentPlan}
+              onChange={handleFormChange}
+              rows="2"
+              placeholder="e.g., Bed rest, increase oral fluid intake, follow-up in 5 days..."
+              className={inputClass}
+            />
           </div>
 
           <button
@@ -253,7 +392,14 @@ const MedicalRecordFormPage = () => {
             disabled={loading}
             className="w-full py-3.5 bg-gradient-to-r from-primary to-primary-dark text-white font-extrabold rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {loading ? 'Saving Clinical Profile...' : <><FaCheck className="text-xs" /> Complete & Save Consultation Entry</>}
+            {loading ? (
+              'Saving Clinical Profile...'
+            ) : (
+              <>
+                <FaCheck className="text-xs" />
+                <span>Complete & Save Consultation Entry</span>
+              </>
+            )}
           </button>
         </form>
       </div>

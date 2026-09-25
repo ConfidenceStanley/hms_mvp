@@ -5,7 +5,7 @@ import {
   FaHome, FaUserInjured, FaUserMd, FaCalendarCheck,
   FaPills, FaFileInvoiceDollar, FaFlask, FaClipboardList,
   FaUsersCog, FaChartBar, FaUserCircle, FaSignOutAlt,
-  FaBars, FaTimes, FaHeart, FaPlus
+  FaBars, FaTimes, FaHeart, FaPlus, FaHeartbeat
 } from 'react-icons/fa';
 
 const roleMenu = {
@@ -14,11 +14,12 @@ const roleMenu = {
     { path: '/patients', label: 'Patients', icon: FaUserInjured },
     { path: '/doctors', label: 'Doctors', icon: FaUserMd },
     { path: '/appointments', label: 'Appointments', icon: FaCalendarCheck },
+    { path: '/vitals', label: 'Vital Signs', icon: FaClipboardList },
     { path: '/records', label: 'Medical Records', icon: FaClipboardList },
     { path: '/pharmacy', label: 'Pharmacy', icon: FaPills },
     { path: '/lab', label: 'Laboratory', icon: FaFlask },
     { path: '/billing', label: 'Billing', icon: FaFileInvoiceDollar },
-    { path: '/users', label: 'User Management', icon: FaUsersCog },
+    { path: '/register', label: 'User Management', icon: FaUsersCog },
     { path: '/reports', label: 'Reports', icon: FaChartBar }
   ],
   receptionist: [
@@ -37,7 +38,8 @@ const roleMenu = {
   nurse: [
     { path: '/dashboard', label: 'Dashboard', icon: FaHome },
     { path: '/patients', label: 'Patients', icon: FaUserInjured },
-    { path: '/vitals', label: 'Vital Signs', icon: FaClipboardList }
+    { path: '/vitals', label: 'Vital Signs', icon: FaHeartbeat },
+    { path: '/appointments', label: 'Appointments', icon: FaCalendarCheck }
   ],
   pharmacist: [
     { path: '/dashboard', label: 'Dashboard', icon: FaHome },

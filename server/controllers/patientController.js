@@ -1,4 +1,6 @@
 const Patient = require('../models/Patient');
+const Doctor = require('../models/Doctor');
+const Appointment = require('../models/Appointment');
 const AppError = require('../utils/errorHandler');
 
 exports.createPatient = async (req, res, next) => {
@@ -54,12 +56,39 @@ exports.getAllPatients = async (req, res, next) => {
     const { search, page = 1, limit = 10 } = req.query;
     const filter = {};
 
+    // DOCTOR RESTRICTION: Only see patients assigned via appointments
+    if (req.user.role === 'doctor') {
+      const doctorProfile = await Doctor.findOne({ userId: req.user.id });
+
+      if (!doctorProfile) {
+        return res.status(200).json({
+          success: true,
+          data: {
+            patients: [],
+            pagination: { total: 0, page: 1, pages: 0 }
+          }
+        });
+      }
+
+      // Find all unique patient IDs booked with this doctor
+      const assignedPatientIds = await Appointment.find({
+        doctorId: doctorProfile._id
+      }).distinct('patientId');
+
+      // Filter patients to only assigned ones
+      filter._id = { $in: assignedPatientIds };
+    }
+
+    // Dynamic Search Filter
     if (search) {
-      filter.$or = [
-        { fullName: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } },
-        { patientId: { $regex: search, $options: 'i' } }
-      ];
+      filter.$and = filter.$and || [];
+      filter.$and.push({
+        $or: [
+          { fullName: { $regex: search, $options: 'i' } },
+          { phone: { $regex: search, $options: 'i' } },
+          { patientId: { $regex: search, $options: 'i' } }
+        ]
+      });
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -94,6 +123,25 @@ exports.getPatientById = async (req, res, next) => {
     const patient = await Patient.findById(req.params.id).populate('registeredBy', 'name');
     if (!patient) {
       return next(new AppError('Patient profile not found', 404));
+    }
+
+    // DOCTOR ACCESS CONTROL: Verify patient is assigned to this doctor
+    if (req.user.role === 'doctor') {
+      const doctorProfile = await Doctor.findOne({ userId: req.user.id });
+      if (!doctorProfile) {
+        return next(new AppError('Doctor profile not found', 403));
+      }
+
+      const isAssigned = await Appointment.findOne({
+        doctorId: doctorProfile._id,
+        patientId: patient._id
+      });
+
+      if (!isAssigned) {
+        return next(
+          new AppError('Access denied: You are not assigned to this patient', 403)
+        );
+      }
     }
 
     res.status(200).json({

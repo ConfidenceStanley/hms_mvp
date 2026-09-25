@@ -42,11 +42,17 @@ const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const vitalSignRoutes = require('./routes/vitalSignRoutes');
+const labTestRoutes = require('./routes/labTestRoutes');
+const medicalRecordRoutes = require('./routes/medicalRecordRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/vitals', vitalSignRoutes);
+app.use('/api/lab', labTestRoutes);
+app.use('/api/records', medicalRecordRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({

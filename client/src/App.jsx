@@ -20,6 +20,11 @@ import AppointmentListPage from './pages/AppointmentListPage';
 import AppointmentBookingPage from './pages/AppointmentBookingPage';
 import AppointmentDetailPage from './pages/AppointmentDetailPage';
 
+// Phase 5 Clinical Pages
+import VitalSignsPage from './pages/VitalSignsPage';
+import MedicalRecordFormPage from './pages/MedicalRecordFormPage';
+import LabDashboardPage from './pages/LabDashboardPage';
+
 const App = () => {
   return (
     <AuthProvider>
@@ -41,6 +46,11 @@ const App = () => {
             <Route path="/appointments" element={<ProtectedRoute><AppointmentListPage /></ProtectedRoute>} />
             <Route path="/appointments/book" element={<ProtectedRoute allowedRoles={['admin', 'receptionist', 'doctor']}><AppointmentBookingPage /></ProtectedRoute>} />
             <Route path="/appointments/:id" element={<ProtectedRoute><AppointmentDetailPage /></ProtectedRoute>} />
+            
+            {/* Phase 5 Routes */}
+            <Route path="/vitals" element={<ProtectedRoute allowedRoles={['admin', 'nurse']}><VitalSignsPage /></ProtectedRoute>} />
+            <Route path="/records/consultation/:appointmentId" element={<ProtectedRoute allowedRoles={['admin', 'doctor']}><MedicalRecordFormPage /></ProtectedRoute>} />
+            <Route path="/lab" element={<ProtectedRoute allowedRoles={['admin', 'lab_technician', 'doctor']}><LabDashboardPage /></ProtectedRoute>} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

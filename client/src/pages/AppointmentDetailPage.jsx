@@ -109,25 +109,29 @@ const AppointmentDetailPage = () => {
         )}
 
         {canUpdate && isActive && (
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h3 className="text-sm font-bold text-navy border-b border-gray-100 pb-2 mb-4">Update Status</h3>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 className="text-sm font-bold text-navy border-b border-slate-100 pb-2 mb-4">Clinical Action Gate</h3>
             <div className="flex flex-wrap gap-3">
+              {user?.role === 'doctor' && apt.status === 'in-progress' && (
+                <button 
+                  onClick={() => navigate(`/records/consultation/${apt._id}`)}
+                  className="px-5 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-white font-extrabold rounded-xl text-sm hover:shadow-lg transition-all"
+                >
+                  Conduct Active EMR Consultation
+                </button>
+              )}
+              
               {apt.status === 'booked' && (
                 <>
-                  <button onClick={() => updateStatus('in-progress')} disabled={updating} className="px-5 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 text-sm disabled:opacity-50">
+                  <button onClick={() => updateStatus('in-progress')} disabled={updating} className="px-5 py-2.5 bg-yellow-500 text-white font-bold rounded-xl text-sm hover:bg-yellow-600 disabled:opacity-50 transition-colors">
                     Start Consultation
                   </button>
-                  <button onClick={() => updateStatus('no-show')} disabled={updating} className="px-5 py-2 bg-gray-500 text-white font-bold rounded-lg hover:bg-gray-600 text-sm disabled:opacity-50">
+                  <button onClick={() => updateStatus('no-show')} disabled={updating} className="px-5 py-2.5 bg-gray-500 text-white font-bold rounded-xl text-sm hover:bg-gray-600 disabled:opacity-50 transition-colors">
                     Mark No Show
                   </button>
                 </>
               )}
-              {apt.status === 'in-progress' && (
-                <button onClick={() => updateStatus('completed')} disabled={updating} className="px-5 py-2 bg-success text-white font-bold rounded-lg hover:bg-green-700 text-sm disabled:opacity-50">
-                  Complete Consultation
-                </button>
-              )}
-              <button onClick={() => updateStatus('cancelled')} disabled={updating} className="px-5 py-2 bg-danger text-white font-bold rounded-lg hover:bg-red-700 text-sm disabled:opacity-50">
+              <button onClick={() => updateStatus('cancelled')} disabled={updating} className="px-5 py-2.5 bg-danger text-white font-bold rounded-xl text-sm hover:bg-red-700 disabled:opacity-50 transition-colors">
                 Cancel Appointment
               </button>
             </div>

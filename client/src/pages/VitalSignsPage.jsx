@@ -51,7 +51,7 @@ const VitalSignsPage = () => {
         patientId: selectedPatient._id,
         ...form
       });
-      toast.success('Patient triage signs recorded successfully');
+      toast.success(`Triage complete for ${selectedPatient.fullName}. Vitals forwarded to consultation queue.`);
       setForm({
         temperature: '', bloodPressureSystolic: '', bloodPressureDiastolic: '',
         heartRate: '', respiratoryRate: '', oxygenSaturation: '',
@@ -59,7 +59,6 @@ const VitalSignsPage = () => {
       });
       setSelectedPatient(null);
       setSearch('');
-      navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error saving vital signs');
     } finally {

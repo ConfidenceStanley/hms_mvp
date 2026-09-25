@@ -77,6 +77,7 @@ const MedicalRecordFormPage = () => {
       }
 
       // Step 2: Create EMR medical record
+      // NOTE: This automatically marks the appointment as 'completed' on the backend
       await API.post('/records', {
         patientId: apt.patientId._id,
         appointmentId: apt._id,
@@ -88,9 +89,6 @@ const MedicalRecordFormPage = () => {
         linkedVitals: vitals ? vitals._id : null,
         linkedLabTests: requestedLabIds
       });
-
-      // Step 3: Complete appointment status
-      await API.put(`/appointments/${apt._id}/status`, { status: 'completed' });
 
       toast.success('Clinical consultation completed & EMR updated');
       navigate('/appointments');

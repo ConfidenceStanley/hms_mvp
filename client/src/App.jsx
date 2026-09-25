@@ -26,6 +26,9 @@ import LabDashboardPage from './pages/LabDashboardPage';
 import MedicineInventoryPage from './pages/MedicineInventoryPage';
 import MedicineFormPage from './pages/MedicineFormPage';
 import PharmacyDispensePage from './pages/PharmacyDispensePage';
+import InvoiceListPage from './pages/InvoiceListPage';
+import InvoiceGeneratorPage from './pages/InvoiceGeneratorPage';
+import InvoiceDetailPage from './pages/InvoiceDetailPage';
 
 const App = () => {
   return (
@@ -56,6 +59,11 @@ const App = () => {
             <Route path="/pharmacy/add" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist']}><MedicineFormPage /></ProtectedRoute>} />
             <Route path="/pharmacy/edit/:id" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist']}><MedicineFormPage /></ProtectedRoute>} />
             <Route path="/pharmacy/dispense" element={<ProtectedRoute allowedRoles={['admin', 'pharmacist']}><PharmacyDispensePage /></ProtectedRoute>} />
+            <Route path="/billing" element={<ProtectedRoute allowedRoles={['admin', 'accountant', 'receptionist', 'patient']}><InvoiceListPage /></ProtectedRoute>} />
+            <Route path="/billing/generate" element={<ProtectedRoute allowedRoles={['admin', 'accountant', 'receptionist']}><InvoiceGeneratorPage /></ProtectedRoute>} />
+            <Route path="/billing/:id" element={<ProtectedRoute allowedRoles={['admin', 'accountant', 'receptionist', 'patient']}><InvoiceDetailPage /></ProtectedRoute>} />
+          
+          
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

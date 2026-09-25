@@ -76,7 +76,7 @@ const LandingPage = () => {
               <a href="#testimonials" className="text-sm text-slate-600 hover:text-slate-900 font-semibold transition-colors">Testimonials</a>
               <a href="#contact" className="text-sm text-slate-600 hover:text-slate-900 font-semibold transition-colors">Contact</a>
               <Link to="/login" className="ml-2 px-5 py-2.5 bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold rounded-xl hover:shadow-lg transition-all text-sm flex items-center gap-2">
-                <span>Patient Portal</span>
+                <span>Check In</span>
                 <FaArrowRight className="text-[10px]" />
               </Link>
             </nav>

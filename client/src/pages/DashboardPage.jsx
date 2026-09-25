@@ -315,20 +315,29 @@ const LabTechDashboard = ({ user }) => {
 
 // ============ ACCOUNTANT DASHBOARD ============
 const AccountantDashboard = ({ user }) => {
+  const [stats, setStats] = useState({ monthlyRevenue: 0, todayRevenue: 0, unpaidTotal: 0, totalInvoices: 0 });
+
+  useEffect(() => {
+    API.get('/invoices/stats')
+      .then(r => setStats(r.data.data))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="max-w-6xl">
       <WelcomeHeader user={user} subtitle="Finance & Billing Desk · Hospital Revenue Management" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-        <StatCard label="Monthly Revenue" value={formatCurrency(0)} icon={FaFileInvoiceDollar} gradient="from-emerald-500 to-emerald-600" shadow="shadow-emerald-500/20" delay={0} />
-        <StatCard label="Pending Payments" value={formatCurrency(0)} icon={FaClock} gradient="from-amber-500 to-orange-500" shadow="shadow-amber-500/20" delay={100} />
-        <StatCard label="Total Invoices" value={0} icon={FaFileMedical} gradient="from-blue-500 to-blue-600" shadow="shadow-blue-500/20" delay={200} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <StatCard label="Monthly Revenue" value={formatCurrency(stats.monthlyRevenue)} icon={FaFileInvoiceDollar} gradient="from-emerald-500 to-emerald-600" shadow="shadow-emerald-500/20" delay={0} />
+        <StatCard label="Today's Revenue" value={formatCurrency(stats.todayRevenue)} icon={FaClock} gradient="from-blue-500 to-blue-600" shadow="shadow-blue-500/20" delay={100} />
+        <StatCard label="Outstanding Balance" value={formatCurrency(stats.unpaidTotal)} icon={FaExclamationTriangle} gradient="from-red-500 to-pink-600" shadow="shadow-red-500/20" delay={200} />
+        <StatCard label="Total Invoices" value={stats.totalInvoices} icon={FaFileMedical} gradient="from-violet-500 to-purple-600" shadow="shadow-violet-500/20" delay={300} />
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 text-center animate-fadeInUp">
-        <FaFileInvoiceDollar className="text-4xl text-slate-300 mx-auto mb-3" />
-        <h3 className="font-bold text-navy mb-1">Billing Module Coming Soon</h3>
-        <p className="text-slate-400 text-sm">Invoice generation and payment tracking will be available in the next phase.</p>
+      <h3 className="text-lg font-bold text-navy mb-4">Quick Actions</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <QuickAction to="/billing/generate" icon={FaPlus} label="Generate New Invoice" color="bg-green-50 text-success" delay={400} />
+        <QuickAction to="/billing" icon={FaFileInvoiceDollar} label="View All Invoices" color="bg-blue-50 text-primary" delay={500} />
       </div>
     </div>
   );

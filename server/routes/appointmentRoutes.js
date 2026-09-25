@@ -10,7 +10,7 @@ const {
 } = require('../controllers/appointmentController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
-router.post('/', protect, authorize('admin', 'receptionist', 'patient'), createAppointment);
+router.post('/', protect, authorize('admin', 'receptionist', 'doctor', 'patient'), createAppointment);
 router.get('/', protect, getAllAppointments);
 router.get('/today', protect, getTodayAppointments);
 router.get('/available-slots', protect, getAvailableSlots);

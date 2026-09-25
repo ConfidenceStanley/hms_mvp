@@ -32,7 +32,13 @@ exports.register = async (req, res, next) => {
       address
     });
 
-    generateTokenResponse(user, 201, res);
+    res.status(201).json({
+      success: true,
+      message: `${role || 'User'} account created successfully`,
+      data: {
+        user: user.toJSON()
+      }
+    });
   } catch (error) {
     next(error);
   }

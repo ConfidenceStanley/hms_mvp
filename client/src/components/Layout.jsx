@@ -5,7 +5,7 @@ import {
   FaHome, FaUserInjured, FaUserMd, FaCalendarCheck,
   FaPills, FaFileInvoiceDollar, FaFlask, FaClipboardList,
   FaUsersCog, FaChartBar, FaUserCircle, FaSignOutAlt,
-  FaBars, FaTimes, FaHeart
+  FaBars, FaTimes, FaHeart, FaPlus
 } from 'react-icons/fa';
 
 const roleMenu = {
@@ -29,6 +29,7 @@ const roleMenu = {
   doctor: [
     { path: '/dashboard', label: 'Dashboard', icon: FaHome },
     { path: '/appointments', label: 'My Appointments', icon: FaCalendarCheck },
+    { path: '/appointments/book', label: 'Book Follow-up', icon: FaPlus },
     { path: '/patients', label: 'My Patients', icon: FaUserInjured },
     { path: '/records', label: 'Medical Records', icon: FaClipboardList },
     { path: '/lab', label: 'Lab Requests', icon: FaFlask }

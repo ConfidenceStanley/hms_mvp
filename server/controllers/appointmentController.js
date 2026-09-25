@@ -8,13 +8,28 @@ exports.createAppointment = async (req, res, next) => {
     const { patientId, doctorId, date, timeSlot, reason } = req.body;
 
     const patient = await Patient.findById(patientId);
-    if (!patient) {
-      return next(new AppError('Patient record not found', 404));
-    }
+    if (!patient) return next(new AppError('Patient record not found', 404));
 
     const doctor = await Doctor.findById(doctorId);
-    if (!doctor || !doctor.isActive) {
-      return next(new AppError('Doctor not available', 404));
+    if (!doctor || !doctor.isActive) return next(new AppError('Doctor not available', 404));
+
+    if (req.user.role === 'doctor') {
+      const doctorProfile = await Doctor.findOne({ userId: req.user.id });
+      if (!doctorProfile) return next(new AppError('Doctor profile not found for your account', 404));
+
+      const hasSeenPatient = await Appointment.findOne({
+        doctorId: doctorProfile._id,
+        patientId,
+        status: { $in: ['completed', 'in-progress'] }
+      });
+
+      if (!hasSeenPatient) {
+        return next(new AppError('You can only schedule follow-up appointments for patients you have previously consulted', 403));
+      }
+
+      if (String(doctorId) !== String(doctorProfile._id)) {
+        return next(new AppError('Doctors can only book follow-up appointments for themselves', 403));
+      }
     }
 
     const appointmentDate = new Date(date);
@@ -55,7 +70,11 @@ exports.createAppointment = async (req, res, next) => {
 
     const populated = await Appointment.findById(appointment._id)
       .populate('patientId', 'fullName patientId phone')
-      .populate({ path: 'doctorId', populate: { path: 'userId', select: 'name' } })
+      .populate({
+        path: 'doctorId',
+        select: 'specialization',
+        populate: { path: 'userId', select: 'name' }
+      })
       .populate('bookedBy', 'name');
 
     res.status(201).json({

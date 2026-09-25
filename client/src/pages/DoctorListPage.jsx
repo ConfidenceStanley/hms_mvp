@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { FaPlus, FaUserMd, FaSearch, FaClock, FaGraduationCap } from 'react-icons/fa';
+import { getImageUrl } from '../utils/getImageUrl';
 
 const DoctorListPage = () => {
   const [doctors, setDoctors] = useState([]);
@@ -73,7 +74,7 @@ const DoctorListPage = () => {
             <div key={doc._id} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group animate-fadeInUp" style={{ animationDelay: `${idx * 100}ms` }}>
               <div className="relative h-48 bg-gradient-to-br from-primary/5 to-purple/5 flex items-center justify-center overflow-hidden">
                 {doc.profileImage ? (
-                  <img src={doc.profileImage} alt={doc.userId?.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={getImageUrl(doc.profileImage)} alt={doc.userId?.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-purple flex items-center justify-center text-white text-3xl font-extrabold shadow-xl">
                     {doc.userId?.name?.charAt(0)?.toUpperCase()}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { FaArrowLeft, FaUserMd, FaPhone, FaEnvelope, FaGraduationCap, FaClock, FaCalendarAlt } from 'react-icons/fa';
+import { getImageUrl } from '../utils/getImageUrl';
 
 const DoctorDetailPage = () => {
   const { id } = useParams();
@@ -49,7 +50,7 @@ const DoctorDetailPage = () => {
           <div className="relative z-10 flex items-end gap-5">
             <div className="w-28 h-28 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-white flex-shrink-0">
               {doctor.profileImage ? (
-                <img src={doctor.profileImage} alt={doctor.userId?.name} className="w-full h-full object-cover" />
+                <img src={getImageUrl(doctor.profileImage)} alt={doctor.userId?.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-primary to-purple flex items-center justify-center text-white text-4xl font-extrabold">
                   {doctor.userId?.name?.charAt(0)?.toUpperCase()}

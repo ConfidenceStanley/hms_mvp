@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const helmet = require('helmet');
 const compression = require('compression');
 const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
+const patientRoutes = require('./routes/patientRoutes');
 
 dotenv.config();
 
@@ -35,8 +37,8 @@ app.use((req, res, next) => {
   next();
 });
 
-const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+app.use('/api/patients', patientRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({

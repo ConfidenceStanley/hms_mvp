@@ -11,6 +11,11 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
+// Patient Module Pages
+import PatientListPage from './pages/PatientListPage';
+import PatientFormPage from './pages/PatientFormPage';
+import PatientDetailPage from './pages/PatientDetailPage';
+
 const App = () => {
   return (
     <AuthProvider>
@@ -26,6 +31,11 @@ const App = () => {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/register" element={<ProtectedRoute allowedRoles={['admin']}><RegisterPage /></ProtectedRoute>} />
+            
+            {/* Patient Module Routing */}
+            <Route path="/patients" element={<ProtectedRoute allowedRoles={['admin', 'receptionist', 'doctor', 'nurse']}><PatientListPage /></ProtectedRoute>} />
+            <Route path="/patients/register" element={<ProtectedRoute allowedRoles={['admin', 'receptionist']}><PatientFormPage /></ProtectedRoute>} />
+            <Route path="/patients/:id" element={<ProtectedRoute allowedRoles={['admin', 'receptionist', 'doctor', 'nurse']}><PatientDetailPage /></ProtectedRoute>} />
           </Route>
           
           <Route path="*" element={<NotFoundPage />} />
